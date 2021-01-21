@@ -1,0 +1,7 @@
+pip install openpyxl  # 오픈파이엑셀 설치
+from openpyxl import Workbook  # 임포트 워크북
+wb = Workbook()  # 새 워크북 생성
+ws = wb.active  # 현재 활성화된 sheet 가져옴
+ws.title = "NadoSheet"  # sheet의 이름을 변경
+wb.save("sample.xlsx")  # 저장(이름)
+wb.close()  # 파일닫음
