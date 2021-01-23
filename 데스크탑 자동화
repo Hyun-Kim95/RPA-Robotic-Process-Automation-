@@ -9,3 +9,19 @@
       # size[1]: height
 
 # 마우스 이동
+  # 절대 좌표로 마우스 이동
+    pyautogui.moveTo(200,100)                # 지정한 위치(가로 x, 세로 y)로 마우스를 이동
+    pyautogui.moveTo(100,200, duration=5)    # 5초 동안 100,200 위치로 이동
+
+  # 상대 좌표로 마우스 이동(현재 커서가 있는 위치로부터)
+    pyautogui.moveTo(100,100, duration=0.25)  # 절대
+    pyautogui.move(100,100, duration=0.25)    # 상대
+    pyautogui.move(100,100, duration=0.25)    # 상대
+
+   # 포인터 위치 얻는 방법
+    print(pyautogui.position())   # point(x, y)
+    p = pyautogui.position()
+    print(p[0], p[1])             # x, y
+    print(p.x, p.y)               # x, y
+
+# 마우스 액션
