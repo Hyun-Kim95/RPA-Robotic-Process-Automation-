@@ -25,3 +25,39 @@
     print(p.x, p.y)               # x, y
 
 # 마우스 액션
+    pyautogui.sleep(3)  # 3초 대기
+    
+    pyautogui.click(1017, 19, duration=1)   # 1초 동안 (1017,19) 좌표를 마우스 클릭
+    pyautogui.click()
+    pyautogui.mouseDown()
+    pyautogui.mouseUp()
+    
+    pyautogui.doubleClick()
+    pyautogui.click(clicks=500) # 500번 클릭
+    
+    pyautogui.moveTo(200,200)
+    pyautogui.mouseDown()   # 마우스 버튼 누른 상태
+    pyautogui.moveTo(300,300)
+    pyautogui.mouseUp()     # 마우스 버튼 뗀 상태
+    
+    pyautogui.rightClick()
+    pyautogui.middleClick()
+    
+    pyautogui.moveTo(734,735)
+    pyautogui.drag(100,0)   # 현재 위치 기준으로 x 100 만큼, y 0 만큼 드래그
+    pyautogui.drag(100,0, duration=0.25)    # 너무 빠른 동작으로 drag 수행이 안될때는 duration 값 설정
+    pyautogui.dragTo(1134,735, duration=0.25)  # 절대 좌표 기준으로 x 1134, y 735 로 드래그
+
+    pyautogui.scroll(800)   # 양수이면 위 방향으로, 음수이면 아래 방향으로 800만큼 스크롤
+
+# 마우스 정보
+    pyautogui.mouseInfo()   #원하는 자리에서 F1을 누르고 3초 기다리면 좌표, rgb컬러가 복사됨
+    # 붙혀넣기 결과: 1022,10 144,144,145 #909091
+    
+    pyautogui.PAUSE = 1     # 모든 동작에 1초씩 sleep 적용
+    
+    for i in range(5):     # fail-safe : 멈추고 싶을때 귀퉁이로 마우스 옮기면 멈추는 기본기능
+    pyautogui.move(100,100)
+    pyautogui.FAILSAFE = False  # fail-safe를 사용하지 않겠다는 의미임(비추)
+
+# 스크린
