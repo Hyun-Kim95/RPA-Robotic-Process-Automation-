@@ -61,3 +61,42 @@
     pyautogui.FAILSAFE = False  # fail-safe를 사용하지 않겠다는 의미임(비추)
 
 # 스크린
+  스크린 샷 찍기
+    img = pyautogui.screenshot()
+    img.save("screenshot.png")  # 파일로 저장
+    
+  마우스 위치가 정말 맞는지 확인
+    # pyautogui.mouseInfo()   # 983,16 34,166,241 #22A6F1     # 원하는 마우스 위치 확인
+    pixel = pyautogui.pixel(983, 16)
+    print(pixel)                                              # rgb 값이 나옴 (34,166,241)
+    print(pyautogui.pixelMatchesColor(983, 16, (34,166,241))) # True
+    print(pyautogui.pixelMatchesColor(983, 16, (pixel)))      # True
+    print(pyautogui.pixelMatchesColor(983, 16, (34,166,242))) # False
+
+# 이미지 처리 - 기본
+    file_menu = pyautogui.locateOnScreen("file_menu.png") # 이미지 찾기(중복이 있어도 처음 찾아지는것만 찾고 끝)
+    print(file_menu)                                      # Box(left=999, top=8, width=39, height=16) 위치와 크기를 나타냄
+    pyautogui.click(file_menu)                            # 찾은 위치를 클릭
+    
+    screen = pyautogui.locateOnScreen("screenshot.png")
+    print(screen)                                         # 찾을 수 없으면 None
+    
+    for i in pyautogui.locateAllOnScreen("checkbox.png"): # 중복된 값을 모두 찾을 때에 사용
+      print(i)                                            # 위치정보 반환
+      pyautogui.click(i, duration=0.25)                   # 찾은것을 다 클릭
+
+# 이미지 처리 - 속도 개선
+  1. GrayScale(정확도는 조금 떨어질 수 있음)
+    trash_icon = pyautogui.locateOnScreen("trash_icon.png", grayscale=True) # 화면을 흑백으로 바꾼 후 찾음
+    pyautogui.moveTo(trash_icon)
+
+  2. 범위 지정
+    trash_icon = pyautogui.locateOnScreen("trash_icon.png", region=(1539,784,1893-1539,873-784))
+    pyautogui.moveTo(trash_icon)
+    # pyautogui.mouseInfo() # 찾은 값: 1539,784(근처 왼쪽 위) / 1893,873(근처 오른쪽 아래)
+
+  3. 정확도 조정 # pip install opencv-python 설치
+    run_btn = pyautogui.locateOnScreen("run_btn.png", confidence=0.9)   # 90%일치(기본값은0.999)
+    pyautogui.moveTo(run_btn)
+
+# 이미지 처리 - 대기
