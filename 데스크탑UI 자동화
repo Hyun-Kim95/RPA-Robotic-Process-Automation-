@@ -100,3 +100,86 @@
     pyautogui.moveTo(run_btn)
 
 # 이미지 처리 - 대기
+  1. 계속 기다리기
+    file_menu_notepad = pyautogui.locateOnScreen("file_menu_notepad.png")
+    if file_menu_notepad:
+        pyautogui.click(file_menu_notepad)
+    else:
+        print("발견 실패")
+        
+    while file_menu_notepad is None:
+        file_menu_notepad = pyautogui.locateOnScreen("file_menu_notepad.png")
+        print("발견 실패")
+
+    pyautogui.click(file_menu_notepad)
+
+  2. 일정 시간동안 기다리기 (TimeOut)
+    import time
+    import sys
+
+    timeout = 10          # 10초 대기
+    start = time.time()   # 시작 시간 설정(UTC)
+    file_menu_notepad = None
+    while file_menu_notepad is None:
+        file_menu_notepad = pyautogui.locateOnScreen("file_menu_notepad.png")
+        end = time.time()           # 종료 시간 설정
+        if end - start > timeout:   # 지정한 10초를 초과하면
+            print("시간 종료")
+            sys.exit()              # 프로그램을 종료
+    pyautogui.click(file_menu_notepad)
+
+  * 함수화 시키기
+    import time
+    import sys
+    
+    def find_target(img_file, timeout=30):
+        start = time.time()
+        target = None
+        while target is None:
+            target = pyautogui.locateOnScreen(img_file)
+            end = time.time()
+            if end - start > timeout:
+                break
+        return target
+
+    def my_click(img_file, timeout=30):
+        target = find_target(img_file, timeout)
+        if target:
+            pyautogui.click(target)
+        else:
+            print(f"[Timeout {timeout}s] Target not found ({img_file}). Terminate program.")
+            sys.exit()
+
+    my_click("file_menu_notepad.png", 10)
+
+# 윈도우 다루기
+    fw = pyautogui.getActiveWindow()    # 현재 활성화된 창 (VScode)
+    print(fw.title)                     # 창의 제목 정보
+    print(fw.size)                      # 창의 크기 정보(width, height)
+    print(fw.left, fw.top, fw.right, fw.bottom) # 창의 좌표 정보
+    pyautogui.click(fw.left + 25, fw.top + 20)  # 창의 좌표를 기준으로 가능
+
+    for w in pyautogui.getAllWindows():                  # 실행중인 모든 윈도우 가져오기
+        print(w)
+
+    for w in pyautogui.getWindowsWithTitle("제목 없음"):  # 특정 이름을 가진것들 가져오기
+        print(w)
+
+    w = pyautogui.getWindowsWithTitle("제목 없음")[0]     # 특정 이름을 가진것들 중에 처음꺼 가져오기
+    print(w)
+    if w.isActive == False:     # 현재 활성화가 되지 않았다면
+        w.activate()            #활성화 (맨 앞으로 가져오기)
+
+    if w.isMaximized == False:  # 현재 최대화가 되지 않았다면
+        w.maximize()            # 최대화
+
+    pyautogui.sleep(1)          # 1초 쉼
+
+    # if w.isMinimized == False:  # 현재 최소화가 되지 않았다면
+    #     w.minimize()            # 최소화
+
+    w.restore() # 화면 원복
+
+    w.close()   # 윈도우 닫기
+
+# 키보드
