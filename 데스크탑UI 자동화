@@ -183,3 +183,59 @@
     w.close()   # 윈도우 닫기
 
 # 키보드
+    w = pyautogui.getWindowsWithTitle("제목 없음")[0]   # 메모장 1개 띄운 상태에서 가져옴
+    w.activate()
+    
+    pyautogui.write("12345")                        # 메모장에 적어줌
+    pyautogui.write("NadoCoding", interval=0.25)    # 적는 속도
+    pyautogui.write("나도코딩")                      # 한글은 안됨
+
+    pyautogui.write(["t","e","s","t","left","left","right","1","a","enter"],interval=0.25)
+    # t e s t 순서대로 적고 왼쪽 방향키 2번, 오른쪽 방향키 1번, 1 a 순서대로 적고 엔터입력
+    # 구글에 'automate the boring stuff with python'검색 -> 밑에 chapter20 클릭 -> (Ctrl+F) 'keyboard Attributes' 검색
+      -> 여기서 필요한 키보드키를 보고 사용하면 됨
+
+  특수 문자
+    # shift 4 -> $
+    pyautogui.keyDown("shift")  # shift 키를 누른 상태에서
+    pyautogui.press("4")        # 숫자 4를 입력하고
+    pyautogui.keyUp("shift")    # shift 키를 땐다
+
+  간편한 조합키
+    # 예제) pyautogui.hotkey("ctrl","alt","shift","a")
+    # 결과) Ctrl 누름->Alt 누름->Shift 누름->a 누름->a 땜->Shift 땜->Alt 땜->Ctrl 땜
+
+  한글 입력하는 법
+    # pip install pyperclip
+    import pyperclip
+    pyperclip.copy("나도코딩")       # "나도코딩" 글자를 클립보드에 저장
+    pyautogui.hotkey("ctrl","v")    # 클립보드에 있는 내용을 붙혀넣기
+
+  함수화
+    def my_write(text):
+        pyperclip.copy(text)
+        pyautogui.hotkey("ctrl","v")
+
+    my_write("나도코딩")
+
+  * 자동화 프로그램 종료
+    win : ctrl + alt + del
+    mac : cmd + shift + option + q
+
+# 메시지 박스
+    print("곧 시작합니다...")
+    pyautogui.countdown(3)  # 카운트다운
+    print("자동화 시작")
+
+    pyautogui.alert("자동화 수행에 실패하였습니다.", "경고")             # 확인버튼만 있는 팝업   # (내용,제목)
+    result = pyautogui.confirm("계속 진행하시겠습니까?", "확인")        # 확인, 취소 버튼
+    print(result)   # 확인 누르면 OK, 취소 누르면 Cancel
+    result = pyautogui.prompt("파일명을 무엇으로 하시계습니까?", "입력") # 사용자 입력
+    print(result)   # OK 누르면 입력 값, Cancel 누르면 None
+    result = pyautogui.password("암호를 입력하세요")                    # 입력창에 '*' 모양으로 적힘
+    print(result)   # OK 누르면 입력 값, Cancel 누르면 None
+
+  * pyautogui에 대해 더 자세히 알고 싶으면
+    구글에 'pyautogui' 검색-> 'Welcome to PyAutoGUI's documentation!' 클릭 -> 자세한 설명과 셈플이 있음
+
+# 로그
