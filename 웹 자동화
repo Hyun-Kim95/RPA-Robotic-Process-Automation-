@@ -1,0 +1,25 @@
+# HTML(html 기본)   # 이런식으로 생긴 문서
+    <html>
+        <head>
+            <meta charset="utf-8">
+            <title>나도코딩 홈페이지</title>
+        </head>
+        <body>
+            <input type="text" value="아이디를 입력하세요">
+            <input type="password">
+            <input type="button" value="로그인">
+            <a href="http://google.com">구글로 이동하기</a>
+        </body>
+    </html>
+
+# XPath
+    html문서에서 특정한 엘리먼트를 찾는 경로
+    (전체경로, 특징을 이용한 경로)
+
+    검사 -> 찾는 부분 우클릭 -> copy -> copy XPath(or copy full XPath)
+
+    ex)
+    /html/body/div/div/div/div/span/a...   전체경로
+    //*[@id="login"]     전체에서 id가 login인 것을 찾음
+
+# 크롬
