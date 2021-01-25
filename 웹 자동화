@@ -16,10 +16,22 @@
     html문서에서 특정한 엘리먼트를 찾는 경로
     (전체경로, 특징을 이용한 경로)
 
-    검사 -> 찾는 부분 우클릭 -> copy -> copy XPath(or copy full XPath)
-
+    검사(F12) -> 찾는 부분 우클릭 -> copy -> copy XPath(or copy full XPath)
+    
     ex)
     /html/body/div/div/div/div/span/a...   전체경로
     //*[@id="login"]     전체에서 id가 login인 것을 찾음
 
 # 크롬
+  검사창에서 원하는 html코드 보는 법(F12)
+    1. 웹 페이지에서 찾을 부분 우클릭해서 검사창 확인
+    2. 오른쪽 위의 점 세게 아이콘 클릭 -> 도구 더보기 -> 개발자 도구
+      - 검사부분에서 왼쪽위의 화살표 누르고 찾을부분 눌러도 됨
+
+# Selenium 기본(1)
+    pip install selenium
+    설치돼있는 크롬버전과 호환되는 크롬 드라이버를 설치해야 됨
+    크롬버전 확인하는 법: chrome://version
+                        오른쪽 위의 점 세게 아이콘 클릭 -> 도움말 -> Chrome 정보
+    chromedriver 검색 -> 맨 위에 들어가서 버전 앞 숫자 두자리 같은것으로 다운로드
+
