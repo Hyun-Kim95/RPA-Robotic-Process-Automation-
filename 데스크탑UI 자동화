@@ -13,7 +13,7 @@
     pyautogui.moveTo(200,100)                # 지정한 위치(가로 x, 세로 y)로 마우스를 이동
     pyautogui.moveTo(100,200, duration=5)    # 5초 동안 100,200 위치로 이동
 
-  # 상대 좌표로 마우스 이동(현재 커서가 있는 위치로부터)
+  # 상대 좌표로 마우스 이동( 현재 커서가 있는위치로부터)
     pyautogui.moveTo(100,100, duration=0.25)  # 절대
     pyautogui.move(100,100, duration=0.25)    # 상대
     pyautogui.move(100,100, duration=0.25)    # 상대
@@ -64,6 +64,7 @@
   스크린 샷 찍기
     img = pyautogui.screenshot()
     img.save("screenshot.png")  # 파일로 저장
+    # win + shift + s : 원하는 부분 스크린샷(가변적인 부분은 주변을 찍어서 좌표로 이동해야 함)
     
   마우스 위치가 정말 맞는지 확인
     # pyautogui.mouseInfo()   # 983,16 34,166,241 #22A6F1     # 원하는 마우스 위치 확인
@@ -387,3 +388,72 @@
     # 모든 파일이 삭제될 수 있으므로 주의!!!
 
 # 파일 시스템(4)
+  파일 복사하기
+    어떤 파일을 폴더 안으로 복사하기
+    shutil.copy("run_btn.png", "test_folder")                           # 원본 파일 경로, 대상 폴더 경로
+    어떤 파일을 폴더 안에 새로운 파일 이름으로 복사하기
+    shutil.copy("run_btn.png", "test_folder/copied_run_btn.png")        # 원본 파일 경로, 대상 폴더 경로(변경된 파일명까지)
+
+    shutil.copyfile("run_btn.png", "test_folder/copied_run_btn_2.png")  # 원본 파일 경로, 대상 파일(폴더X) 경로
+
+    shutil.copy2("run_btn.png", "test_folder/copy2.png")                # 원본 파일 경로, 대상 폴더(파일) 경로
+
+    # copy, copyfile : 메타정보 복사X
+    # copy2 : 메타정보 복사 O(생성시간 포함 모든것을 그대로 복사)
+
+  폴더 복사
+    shutil.copytree("test_folder", "test_folder2")   # 원본 폴더 경로, 대상 폴더 경로
+    shutil.copytree("test_folder", "test_folder3")   # 원본 폴더 경로, 대상 폴더 경로
+
+  폴더 이동
+  shutil.move("test_folder", "test_folder3")         # test_folder 를 test_folder3 밑으로 이동
+  shutil.move("test_folder2", "test_folder3")
+  shutil.move("test_folder3", "test_folder_rename")  # 폴더이름이 없으면 폴더명 변경되는 효과
+
+# 퀴즈
+  # Quiz) 아래 동작을 자동으로 수행하는 프로그램을 작성하시오
+
+  # 1. 그림판 실행 (단축키: win + r, 입력값 : mspaint) 및 최대화
+
+  # 2. 상단의 텍스트 기능을 이용하여 흰 영역 아무 곳에다가 글자 입력
+  #     - 입력 글자 : "참 잘했어요"
+
+  # 3. 5초 대기 후 그림판 종료
+  #     이 때, 저장하지 않음을 자동으로 선택하여 프로그램이 완전 종료되도록 함
+  #----------------------------------------------------------------------------
+  import pyautogui
+  import pyperclip
+  import sys
+
+  pyautogui.hotkey("win","r") # 단축키 : win + r
+  pyautogui.write("mspaint")  # 프로그램 명 입력
+  pyautogui.press("enter")    # 엔터 키 입력
+
+  pyautogui.sleep(1)  # 그림판 나타날 때까지 1초 대기
+
+  w = pyautogui.getWindowsWithTitle("제목 없음 - 그림판")[0]  # 그림판 1개만 띄워져 있다고 가정
+  if w.isMaximized == False:
+      w.maximize()    # 최대화
+
+  text_btn = pyautogui.locateOnScreen("text.png") # win + shift + s : 원하는 부분 스크린샷
+  if text_btn:
+      pyautogui.click(text_btn, duration=0.25)
+  else:
+      print("찾기 실패")
+      sys.exit()
+
+  pyautogui.sleep(1)
+
+  pyautogui.click(94,228, duration=0.25)
+
+  def my_write(text):
+      pyperclip.copy(text)
+      pyautogui.hotkey("ctrl","v")
+
+  my_write("참 잘했어요")
+
+  pyautogui.sleep(5)
+
+  w.close()
+  pyautogui.sleep(0.25)
+  pyautogui.press("n")
