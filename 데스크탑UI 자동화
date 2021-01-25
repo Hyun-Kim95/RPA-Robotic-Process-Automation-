@@ -443,8 +443,11 @@
       sys.exit()
 
   pyautogui.sleep(1)
-
-  pyautogui.click(94,228, duration=0.25)
+  
+  # 흰 영역 찾기
+  # pyautogui.click(94,228, duration=0.25)
+  btn_brush = pyautogui.locateOnScreen("btn_brush.png")
+  pyautogui.click(btn_brush.left - 200, btn_brush.top + 200)  # 이렇게 하면 최대화가 안돼도 잘 찾음
 
   def my_write(text):
       pyperclip.copy(text)
