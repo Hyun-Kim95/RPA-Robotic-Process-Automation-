@@ -34,4 +34,257 @@
     크롬버전 확인하는 법: chrome://version
                         오른쪽 위의 점 세게 아이콘 클릭 -> 도움말 -> Chrome 정보
     chromedriver 검색 -> 맨 위에 들어가서 버전 앞 숫자 두자리 같은것으로 다운로드
+    
+    from selenium import webdriver
+    browser = webdriver.Chrome()
+    browser.get("http://daum.net")      # 이런 식으로 사용
+    
+  * 터미널에서 실습
+    from selenium import webdriver
+    browser = webdriver.Chrome()            # 빈 크롬창이 띄워짐
+    browser.get("http://naver.com")         # 네이버로 들어감
+    elem = browser.find_element_by_link_text("카페")  # 카페라는 텍스트 링크를 찾음   # 검사창을 통해서 비교하며 확인
+    elem.get_attribute("href")                        # 카페의 링크를 확인            ←
+    elem.get_attribute("class")                       # 카페의 클래스를 확인          ←
+    elem.click()                            # 카페 클릭
+    browser.back()                          # 뒤로 가기
+    browser.forward()                       # 앞으로 가기
+    browser.refresh()                       # 새로고침
+    elem = browser.find_element_by_id("query")      # 검사창 통해 검색창의 id를 확인해서 'elem'에 속성 부여
+    elem                                            # 제대로 됐는지 확인
+    elem.send_keys("나도코딩")                      # 검색창에 글자를 적음
+    from selenium.webdriver.common.keys import Keys # 앤터 키를 사용하려면 필요
+    elem.send_keys(Keys.ENTER)                      # 앤터 누름
 
+# Selenium 기본(2)
+    elem = browser.find_element_by_tag_name("a")    # 처음 나오는 'a'태그에 해당하는 앨리먼트를 가져옴
+    elem.get_attribute("href")                      # 페이지에서 처음 나오는 'a'태그의 링크를 가져옴
+    elems = browser.find_elements_by_tag_name("a")  # 모든 'a'태그를 가져옴
+    elems                                           # 엄청 많은 'a'태그들이 있는걸 보여줌
+    >>> for e in elems:                             # 'a'태그들 각각의 링크들이 나옴
+    ...     e.get_attribute("href")                 # 탭 한번 누르고 쓰고 앤터 두번 눌러야 됨
+    browser.get("http://daum.net")                  # '다음' 사이트로 옮겨감
+    elem = browser.find_element_by_name("q")        # 검사를 통해 검색창에 'name' 속성이 있는것을 확인하고 'elem'에 넣어줌
+    elem.send_keys("나도코딩")                       # '나도코딩' 을 입력함(검색창을 잘 가져왔음을 확인)
+    elem.send_keys("나도코딩")                       # 또 입력하면 뒤에 붙혀서 적히게 됨(지우고 적어야 함)
+    elem.clear()                                    # 글자를 다 지워줌
+    elem.send_keys("나도코딩")
+    elem = browser.find_element_by_xpath('//*[@id="daumSearch"]/fieldset/div/div/button[2]')
+    # 검사창을 통해 검색버튼의 xpath를 복사하여 작은 따옴표 안에 붙혀넣음(안에 이미 큰 따옴표가 있기 때문)
+    elem.click()                                    # 검색키를 누름
+    browser.save_screenshot('daum.png')             # 스크린샷 찍음
+    browser.page_source                             # 페이지 소스를 확인
+    browser.close()                                 # 현재 탭 닫기
+    browser.quit()                                  # 브라우저 전체 닫기
+  * 구글 검색창에 'selenium with python' 검색하고 맨 위에 있는거 들어가서 왼쪽에 'Locating Elements' 들어가면 공부했던것들 나와있음
+
+# Iframe
+    w3shool radiobutton 검색 -> 들어가서 try it yourself 클릭 -> 검사에서 male 클릭 부분의 코드를 xpath copy 함
+    
+  * 실패
+    import time
+    from selenium import webdriver
+    browser = webdriver.Chrome()
+    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_input_type_radio')  # 사이트
+    elem = browser.find_element_by_xpath('//*[@id="male"]') # male 경로
+    elem.click()    # male 클릭
+    time.sleep(5)   # 5초 대기
+    browser.quit()  # 브라우저 종료
+    # 오류가 발생함: iframe 안에 들어 있어서 찾을 수가 없음
+  * 성공
+    import time
+    from selenium import webdriver
+    browser = webdriver.Chrome()
+    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_input_type_radio')
+    browser.switch_to_frame('iframeResult')                     # frame 전환 (iframe의 id를 복사해서 가져옴)
+    elem = browser.find_element_by_xpath('//*[@id="male"]')
+    elem.click()
+    browser.switch_to_default_content()                         # 상위(frame 밖)로 빠져 나옴
+    time.sleep(5)   # 5초 대기
+    browser.quit()
+
+# Radio(라디오 버튼: 하나만 선택할 수있는 버튼)
+    import time
+    from selenium import webdriver
+
+    browser = webdriver.Chrome()
+    browser.maximize_window()   # 창 최대화
+    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_input_type_radio')
+    browser.switch_to_frame('iframeResult')         # frame 전환(iframe의 id를 복사해서 가져옴)
+    elem = browser.find_element_by_xpath('//*[@id="male"]')
+
+    # 선택이 안되어 있으면 선택하기
+    if elem.is_selected() == False:     # 라디오 버튼이 선택되어 있지 않으면
+        print("선택 안되어 있으므로 선택하기")
+        elem.click()
+    else:   # 라디오 버튼이 선택되어 있다면
+        print("선택 되어 있으므로 아무것도 안함")
+
+    time.sleep(5)   # 5초 대기
+
+    # 선택이 안되어 있으면 선택하기
+    if elem.is_selected() == False:     # 라디오 버튼이 선택되어 있지 않으면
+        print("선택 안되어 있으므로 선택하기")
+        elem.click()
+    else:   # 라디오 버튼이 선택되어 있다면
+        print("선택 되어 있으므로 아무것도 안함")
+
+    browser.quit()
+    ## 선택 안되어 있는경우는 확인 안해도 되는거긴 함(어차피 하나 누르면 나머지는 체크해제가 되므로) ##
+
+# CheckBox
+    w3shool checkbox 검색 -> 들어가서 try it yourself 클릭
+    
+    import time
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+
+    browser = webdriver.Chrome()
+    browser.maximize_window()
+    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_input_type_checkbox')
+    browser.switch_to_frame('iframeResult')
+
+    # elem = browser.find_element_by_xpath('//*[@id="vehicle1"]')
+    # elem = browser.find_element(By.XPATH, '//*[@id="vehicle1"]')
+    elem = browser.find_element(By.ID, 'vehicle1')  # 위의 두개랑 똑같이 작동함(편한 것으로 사용하면 됨)
+
+    time.sleep(5)
+
+    if elem.is_selected() == False:
+        print("선택 안되어 있으므로 선택")
+        elem.click()
+    else:
+        print("선택 되어 있으므로 아무것도 안함")
+
+    time.sleep(5)
+    browser.quit()
+
+# Select & Option
+    w3shool html option 검색 -> 들어가서 try it yourself 클릭
+    
+  * 기본코드
+    import time
+    from selenium import webdriver
+
+    browser = webdriver.Chrome()
+    browser.maximize_window()
+    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_option')
+  
+  * 1번째 방법
+    browser.switch_to.frame('iframeResult')
+    # cars 에 해당하는 element 를 찾고, 드롭다운 내부에 있는 4번째 옵션을 선택
+    elem = browser.find_element_by_xpath('//*[@id="cars"]/option[4]')
+    # option[1] : 첫번째 항목
+    # option[2] : 두번째 항목
+    # ...
+    elem.click()
+  
+  * 2번째 방법
+    # 텍스트 값을 통해서 선택하는 방법
+    # 옵션 중에서 텍스트가 Audi 인 항목을 선택
+    elem = browser.find_element_by_xpath('//*[@id="cars"]/option[text()="Audi"]')
+    elem.click()
+
+  * 3번째 방법
+    # 텍스트 값이 부분 일치하는 항목 선택하는 방법
+    elem = browser.find_element_by_xpath('//*[@id="cars"]/option[contains(text(),"Au")]')
+    elem.click()
+    
+  * 기본코드
+    time.sleep(5)
+    browser.quit()
+
+# 동적 페이지 스크롤(1)
+    네이버에 '네이버쇼핑'검색 -> 물건 검색하고 스크롤 내리면 스크롤 크기가 작아지면서 제품이 더 나타남
+    
+    import time
+    from selenium import webdriver
+    from selenium.webdriver.common.keys import Keys
+
+    browser = webdriver.Chrome()
+    browser.maximize_window()
+
+    browser.get('https://shopping.naver.com/home/p/index.nhn')
+
+    # '무선마우스' 입력
+    elem = browser.find_element_by_xpath('//*[@id="autocompleteWrapper"]/input[1]')
+    elem.send_keys('무선마우스')
+    # browser.find_element_by_xpath('//*[@id="autocompleteWrapper"]/input[1]').send_keys('무선마우스')   # elem을 따로 안 만들고 이렇게도 가능함
+
+    time.sleep(1)   # 바로 검색버튼 누르면 클릭이 안돼서
+
+    elem.send_keys(Keys.ENTER)  # Enter 클릭
+    # browser.find_element_by_xpath('//*[@id="autocompleteWrapper"]/a[2]').click()   # elem을 따로 안 만들고 이렇게도 가능함
+    
+    # 스크롤
+    # 지정한 위치로 스크롤 내리기
+    # 모니터(해상도) 높이인 1080 위치로 스크롤 내리기
+    browser.execute_script('window.scrollTo(0,1080)') # 1920*1080(모니터 해상도)
+    browser.execute_script('window.scrollTo(0,2080)')
+
+    # 화면 가장 아래로 스크롤 내리기
+    browser.execute_script('window.scrollTo(0, document.body.scrollHeight)')
+
+    time.sleep(5)
+
+    browser.quit()
+
+# 동적 페이지 스크롤(2)
+    # 동적 페이지에 대해서 마지막까지 스크롤 반복 수행
+    interval = 2    # 2초에 한번씩 스크롤 내리기
+
+    # 현재 문서 높이르 가져와서 저장
+    prev_height = browser.execute_script('return document.body.scrollHeight')
+
+    # 반복 수행
+    while True:
+        # 스크롤을 화면 가장 아래로 내림
+        browser.execute_script('window.scrollTo(0, document.body.scrollHeight)')
+
+        # 페이지 로딩 대기 (2초)
+        time.sleep(interval)
+
+        # 현재 문서 높이 가져와서 저장
+        curr_height = browser.execute_script('return document.body.scrollHeight')
+        if curr_height == prev_height:  # 높이 변화가 없으면
+            break   # 반복문 탈출(모든 스크롤 동작 완료)
+
+        prev_height = curr_height
+
+    # 맨 위로 올리기
+    browser.execute_script('window.scrollTo(0,0)')
+
+    time.sleep(5)
+    browser.quit()
+
+# 특정 역역 스크롤
+  * 기본코드
+    import time
+    from selenium import webdriver
+    from selenium.webdriver.common.action_chains import ActionChains
+
+    browser = webdriver.Chrome()
+    browser.get('https://www.w3schools.com/html/')
+    browser.maximize_window()
+
+    time.sleep(5)
+
+    # 특정 영역 스크롤
+    elem = browser.find_element_by_xpath('//*[@id="leftmenuinnerinner"]/a[61]')
+
+  * 방법 1 : ActionChain  # 맨 밑에 보이게끔만 스크롤이 움직임
+    actions = ActionChains(browser)
+    actions.move_to_element(elem).perform()
+    
+  * 방법 2 : 좌표 정보 이용(좌표정보를 주다보니까 스크롤이 알아서 이동함)   # 중간에 보임
+    xy = elem.location_once_scrolled_into_view  # 함수가 아니니까 () 안씀
+    print("type : ", type(xy))  # dict
+    print("value : ", xy)       # 'x': 0, 'y': 481
+
+    elem.click()    # 스크롤 조절 안해도 안보이는 곳의 클릭을 알아서 하긴 함
+
+    time.sleep(5)
+    browser.quit()
+
+# 파일 다운로드
+    구글에 w3school download attribute 검색 
