@@ -1,0 +1,22 @@
+# 환경설정(gmail기준)
+  구글에서 우측 상단에점9개짜리 클릭 -> 계정 -> 보안 -> 로그인 2단계 설정 -> 계정
+  -> 앱 비밀번호 설정 -> 노란칸에 있는거 복사 -> account.py에 적어둠
+
+# 메일 발신 기본
+  import smtplib
+  from account import *
+
+  with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+      smtp.ehlo()     # 연결이 잘 수립되는지 확인
+      smtp.starttls() # 모든 내용이 암호화 되어 전송
+      smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)   # 로그인
+
+      subject = "test mail"   # 메일 제목
+      body = "mail body"      # 메일 본문
+
+      msg = f"subject: {subject}\n{body}"
+
+      # 발신자, 수신자, 정해진 형식의 메시지
+      smtp.sendmail(EMAIL_ADDRESS, "rhdiddleka@gmail.com", msg)
+
+# 메일 발신 고급
