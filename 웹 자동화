@@ -1,17 +1,3 @@
-# HTML(html 기본)   # 이런식으로 생긴 문서
-    <html>
-        <head>
-            <meta charset="utf-8">
-            <title>나도코딩 홈페이지</title>
-        </head>
-        <body>
-            <input type="text" value="아이디를 입력하세요">
-            <input type="password">
-            <input type="button" value="로그인">
-            <a href="http://google.com">구글로 이동하기</a>
-        </body>
-    </html>
-
 # XPath
     html문서에서 특정한 엘리먼트를 찾는 경로
     (전체경로, 특징을 이용한 경로)
@@ -79,13 +65,11 @@
   * 구글 검색창에 'selenium with python' 검색하고 맨 위에 있는거 들어가서 왼쪽에 'Locating Elements' 들어가면 공부했던것들 나와있음
 
 # Iframe
-    w3shool radiobutton 검색 -> 들어가서 try it yourself 클릭 -> 검사에서 male 클릭 부분의 코드를 xpath copy 함
-    
   * 실패
     import time
     from selenium import webdriver
     browser = webdriver.Chrome()
-    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_input_type_radio')  # 사이트
+    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_input_type_radio')  # w3shool radiobutton (try it yourself) 사이트
     elem = browser.find_element_by_xpath('//*[@id="male"]') # male 경로
     elem.click()    # male 클릭
     time.sleep(5)   # 5초 대기
@@ -132,16 +116,14 @@
     browser.quit()
     ## 선택 안되어 있는경우는 확인 안해도 되는거긴 함(어차피 하나 누르면 나머지는 체크해제가 되므로) ##
 
-# CheckBox
-    w3shool checkbox 검색 -> 들어가서 try it yourself 클릭
-    
+# CheckBox    
     import time
     from selenium import webdriver
     from selenium.webdriver.common.by import By
 
     browser = webdriver.Chrome()
     browser.maximize_window()
-    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_input_type_checkbox')
+    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_input_type_checkbox')   # w3shool checkbox (try it yourself) 사이트
     browser.switch_to_frame('iframeResult')
 
     # elem = browser.find_element_by_xpath('//*[@id="vehicle1"]')
@@ -160,15 +142,13 @@
     browser.quit()
 
 # Select & Option
-    w3shool html option 검색 -> 들어가서 try it yourself 클릭
-    
   * 기본코드
     import time
     from selenium import webdriver
 
     browser = webdriver.Chrome()
     browser.maximize_window()
-    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_option')
+    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_option') # w3shool html option (try it yourself) 사이트
   
   * 1번째 방법
     browser.switch_to.frame('iframeResult')
@@ -287,4 +267,159 @@
     browser.quit()
 
 # 파일 다운로드
-    구글에 w3school download attribute 검색 
+    import time
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
+
+    chrome_options = Options()
+    chrome_options.add_experimental_option('prefs', {'download.default_directory': r'D:\rpa_basic\3_web'})  # 다운로드 기본위치 정의
+
+    browser = webdriver.Chrome(options=chrome_options)  # 다운로드 위치 적용
+    browser.get('https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_a_download')    # w3school download attribute (try it yourself) 사이트
+
+    browser.switch_to.frame('iframeResult')
+
+    # download의 링크를 클릭
+    elem = browser.find_element_by_xpath('/html/body/p[2]/a')
+    elem.click()
+
+    time.sleep(5)
+    browser.quit()
+
+# 페이지 로딩 대기(1~2)
+    import time
+    from selenium import webdriver
+
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC    # 기니깐 EC 라고 이름지음
+
+    browser = webdriver.Chrome()
+    browser.maximize_window()
+    browser.get('https://flight.naver.com/flights/')        # 네이버 항공권 사이트
+
+    # 가는 날 클릭
+    browser.find_element_by_link_text('가는날 선택').click()
+    browser.find_elements_by_link_text('30')[0].click()     # '30' 이란 숫자가 중복될 때 첫번째꺼 클릭(이번달)
+    # 오늘 날      # 둘다 30일로 하려면 밑에도 '30'[0] 으로 해야함
+    browser.find_elements_by_link_text('5')[1].click()      # '5' 라는 숫자가 중복될 때 두번째꺼 클릭(다음달)
+
+    # 제주도 클릭
+    browser.find_element_by_xpath('//*[@id="recommendationList"]/ul/li[1]/div/span').click()
+
+    # 항공권 검색 클릭
+    browser.find_element_by_partial_link_text('항공권 검색').click()
+
+    # time.sleep(10)    # 결과 기다리기 -> 비효율적임
+
+    try:    # 브라우저를 기다린다.# 10초동안      #원하는 엘리먼트가 위치 할때까지   # xpath 기준으로 이 코드에 해당하는    #튜플형태임
+        elem = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="content"]/div[2]/div/div[4]/ul/li[1]')))
+        # 10초 안에 결과가 나오면 바로 넘어감
+        print(elem.text)
+    except:
+        print("실패했어요")
+
+    # 첫 번째 결과 출력(실패: 원하는 정보가 아직 로딩이 돼어있지 않아서 대기시간이 필요함↑↑↑)
+    # elem = browser.find_element_by_xpath('//*[@id="content"]/div[2]/div/div[4]/ul/li[1]')
+    # print(elem.text)    # element 내에 있는 text 부분을 출력
+
+    time.sleep(5)
+    browser.quit()
+# Handle
+    import time
+    from selenium import webdriver
+
+    browser = webdriver.Chrome()
+    browser.maximize_window()
+
+    browser.get('https://www.w3schools.com/tags/att_input_type_radio.asp')  # w3shool radiobutton 사이트(try it yourself: X)
+    curr_handle = browser.current_window_handle
+    print(curr_handle)  # 현재 윈도우 핸들 정보
+
+    # Try it yourself
+    browser.find_element_by_xpath('//*[@id="main"]/div[2]/a').click()
+
+    handles = browser.window_handles    # 모든 핸들 정보
+    for handle in handles:
+        print(handle)   # 각 핸들 정보
+        browser.switch_to_window(handle)    # 각 핸들로 이동해서
+        print(browser.title)    # 출력해보면 현재 핸들 (브라우저)의 제목 표시
+        print()
+
+    # 새로 이동된 브라우저에서 뭔가 자동화 작업을 수행...
+
+    # 그 브라우저를 종료
+    print("현재 핸들 닫기")
+    browser.close()
+
+    # 이전 핸들로 돌아오기
+    print("처음 핸들로 돌아오기")
+    browser.switch_to_window(curr_handle)
+
+    print(browser.title)    # HTML input type="radio"
+
+    # 브라우저 컨트롤이 가능한지 확인
+    time.sleep(5)
+    browser.get('http://daum.net')
+
+    time.sleep(5)
+    browser.quit()
+
+# 퀴즈
+    # Quiz) Selenium 을 이용하여 아래 업무를 자동으로 수행하는 프로그램을 작성하시오.
+
+    # 1. https://www.w3schools.com 접속 (URL 은 구글에서 w3schools 검색)
+    # 2. 화면 중간 LEARN HTML 클릭
+    # 3. 상단 메뉴 중 HOW TO 클릭
+    # 4. 좌측 메뉴 중 Contact Form 메뉴 클릭
+    # 5. 입력란에 아래 값 입력
+    #     First Name : 나도
+    #     Last Name : 코딩
+    #     Country : Canada
+    #     Subject : 퀴즈 완료하였습니다.
+    #     ※ 위 값들은 변수로 미리 저장해두세요
+    # 6. 5초 대기 후 Submit 버튼 클릭
+    # 7. 5초 대기 후 브라우저 종료
+    #------------------------------------------------------
+    import time
+    from selenium import webdriver
+
+    browser = webdriver.Chrome()
+    browser.maximize_window()
+
+    # url 접속
+    browser.get('https://www.w3schools.com/')
+
+    # LEARN HTML 클릭
+    browser.find_element_by_xpath('//*[@id="main"]/div[1]/div[1]/a[1]').click()
+
+    # HOW TO 클릭
+    browser.find_element_by_xpath('//*[@id="topnav"]/div/div[1]/a[10]').click()
+
+    # Contact Form 메뉴 클릭
+    # 같은 이름이 있을 수 있음
+    # browser.find_element_by_link_text('Contact Form').click()
+    # 순서가 바뀔 수 있음
+    # browser.find_element_by_xpath('//*[@id="leftmenuinnerinner"]/a[116]').click()
+    # 가장 좋은 방법
+    browser.find_element_by_xpath('//*[@id="leftmenuinnerinner"]/a[text()="Contact Form"]').click()
+
+    # 변수 생성
+    first_name= "나도"
+    last_name = "코딩"
+    country = "Canada"
+    subject = "퀴즈 완료하였습니다."
+
+    # 입력란에 입력
+    browser.find_element_by_xpath('//*[@id="fname"]').send_keys(first_name)
+    browser.find_element_by_xpath('//*[@id="lname"]').send_keys(last_name)
+    browser.find_element_by_xpath('//*[@id="country"]/option[text()="{}"]'.format(country)).click()
+    browser.find_element_by_xpath('//*[@id="main"]/div[3]/textarea').send_keys(subject)
+
+    # 5초 대기 후 Submit 버튼 클릭
+    time.sleep(5)
+    browser.find_element_by_xpath('//*[@id="main"]/div[3]/a').click()
+
+    # 5초 대기 후 브라우저 종료
+    time.sleep(5)
+    browser.quit()
