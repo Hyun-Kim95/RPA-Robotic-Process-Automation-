@@ -2,7 +2,7 @@
   구글에서 우측 상단에점9개짜리 클릭 -> 계정 -> 보안 -> 로그인 2단계 설정 -> 계정
   -> 앱 비밀번호 설정 -> 노란칸에 있는거 복사 -> account.py에 적어둠
 
-# 메일 발신 기본
+# 메일 발신 기본(한글X)
   import smtplib
   from account import *
 
@@ -20,3 +20,152 @@
       smtp.sendmail(EMAIL_ADDRESS, "rhdiddleka@gmail.com", msg)
 
 # 메일 발신 고급
+  import smtplib
+  from account import *
+  from email.message import EmailMessage
+
+  msg = EmailMessage()
+  msg["subject"] = "테스트 메일입니다"  # 제목
+  msg["From"] = EMAIL_ADDRESS         # 보내는  사람
+  msg["To"] = "khyun9512@gmail.com"   # 받는 사람
+
+  # 여러 명에게 메일을 보낼 때
+  # msg["To"] = "khyun9512@gmail.com", "khyun9512@gmail.com"
+  
+  # to_list = ["khyun9512@gmail.com", "khyun9512@gmail.com", "khyun9512@gmail.com"]
+  # msg["To"] = ", ".join(to_list)
+
+  # 참조(위 처럼 리스트로 가져오는 것도 가능)
+  # msg["Cc"] = "khyun9512@gmail.com"
+
+  # 비밀참조(위 처럼 리스트로 가져오는 것도 가능)
+  # msg["Bcc"] = "khyun9512@gmail.com"
+
+  msg.set_content("테스트 본문입니다.")   # 본문
+
+  with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+      smtp.ehlo()
+      smtp.starttls()
+      smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+      smtp.send_message(msg)
+
+# 파일 첨부
+  import smtplib
+  from account import *
+  from email.message import EmailMessage
+
+  msg = EmailMessage()
+  msg["subject"] = "테스트 메일입니다"    # 제목
+  msg["From"] = EMAIL_ADDRESS         # 보내는  사람
+  msg["To"] = "khyun9512@gmail.com"   # 받는 사람
+  msg.set_content("다운로드 하세요")
+
+  # MIME Type 검색해서(전체목록이라 돼있는거) 보면 메인타입과 서브타입 확인 가능
+  with open("btn_brush.png", "rb") as f:
+      msg.add_attachment(f.read(), maintype="image", subtype="png", filename=f.name)
+
+  with open("테스트.pdf", "rb") as f:
+      msg.add_attachment(f.read(), maintype="application", subtype="pdf", filename=f.name)
+
+  with open("엑셀.xlsx", "rb") as f:
+      msg.add_attachment(f.read(), maintype="application", subtype="octet-stream", filename=f.name)
+
+  with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+      smtp.ehlo()
+      smtp.starttls()
+      smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+      smtp.send_message(msg)
+
+# 메일 수신
+  pip install imap-tools
+  from imap_tools import MailBox
+  from account import *
+
+  mailbox = MailBox("imap.gmail.com", 993)    # 기본 받은 편지함↓↓↓
+  mailbox.login(EMAIL_ADDRESS, EMAIL_PASSWORD, initial_folder="INBOX")
+
+  # limit : 최대 메일 갯수
+  # reverse = True : 최근 메일부터 (안적으면 기본값은 False)
+  for msg in mailbox.fetch(limit=1, reverse= True):
+      print("제목", msg.subject)
+      print("발신자", msg.from_)
+      print("수신자", msg.to)
+      # print("참조자", msg.cc)
+      # print("비밀 참조자", msg.bcc)
+      print("날짜", msg.date) # gmt-8 시간으로 나옴 -> gmt-8 검색해서 계산해야됨(+17)
+      print("본문", msg.text)
+      print("HTML 메시지", msg.html)
+      print("=" * 100)  # 알아보기 편하게 구분선
+
+      # 첨부 파일
+      for att in msg.attachments:
+          print("첨부파일 이름", att.filename)
+          print("타임", att.content_type)
+          print("크기", att.size)
+
+          # 파일 다운로드
+          with open("download_" + att.filename, "wb") as f:   # 파일 이름 앞에 download_ 붙혀서 다운 받을거임(바이너리 형태)
+              f.write(att.payload)
+              print("첨부 파일 {} 다운로드 완료".format(att.filename))
+
+  mailbox.logout()
+
+# 메일 검색(1)
+    from imap_tools import MailBox
+    from account import *
+
+    # mailbox = MailBox("imap.gmail.com", 993)    # 기본 받은 편지함↓↓↓
+    # mailbox.login(EMAIL_ADDRESS, EMAIL_PASSWORD, initial_folder="INBOX")
+    # mailbox.logout()
+    
+    # 위 3줄을 이 한줄로 대체 가능
+    with MailBox("imap.gmail.com", 993).login(EMAIL_ADDRESS, EMAIL_PASSWORD, initial_folder="INBOX") as mailbox:
+        
+        for msg in mailbox.fetch():                           # 전체 메일 다 가져오기
+            print("[{}] {}".format(msg.from_, msg.subject))
+
+        for msg in mailbox.fetch('(UNSEEN)'):                 # 읽지 않은 메일 가져오기
+            print("[{}] {}".format(msg.from_, msg.subject))
+
+        for msg in mailbox.fetch('(FROM khyun9512@gmail.com)', limit=3, reverse=True):  # 특정인이 보낸 메일 가져오기
+            print("[{}] {}".format(msg.from_, msg.subject))
+
+        # "(TEXT 'test mail')" : 에러 발생함 -> 작은 따옴표가 밖이어야 함
+        # 띄어쓰기로 구분하여 "test", "mail"이라는 각각의 단어를 찾음
+        for msg in mailbox.fetch('(TEXT "test mail")'):       # 어떤 글자를 포함하는 메일(제목, 본문)
+            print("[{}] {}".format(msg.from_, msg.subject))
+
+        # 한글은 검색이 안됨
+        for msg in mailbox.fetch('(SUBJECT "test mail")'):    # 어떤 글자를 포함하는 메일(제목만)
+            print("[{}] {}".format(msg.from_, msg.subject))
+
+        # 한글 검색 방법(제목만)
+        for msg in mailbox.fetch(limit=5, reverse=True):
+            if "테스트" in msg.subject:
+                print("[{}] {}".format(msg.from_, msg.subject))
+
+# 메일 검색(2)
+      # 특정 날짜 이후의 메일
+      for msg in mailbox.fetch('(SENTSINCE 26-JAN-2021)', reverse=True, limit=5):
+          print("[{}] {}".format(msg.from_, msg.subject))
+
+      # 특정 날짜에 온 메일
+      for msg in mailbox.fetch('(ON 27-JAN-2021)', reverse=True, limit=5):
+          print("[{}] {}".format(msg.from_, msg.subject))
+
+
+      # 2가지 이상의 조건을 모두 만족하는 메일(조건은 띄어쓰기로 이어적으면 됨)
+      for msg in mailbox.fetch('(ON 27-JAN-2021 SUBJECT "test mail")', reverse=True, limit=5):
+          print("[{}] {}".format(msg.from_, msg.subject))
+
+      # 2가지 이상의 조건 중 하나라도 만족하는 메일(또는 조건)
+      for msg in mailbox.fetch('(OR ON 27-JAN-2021 SUBJECT "test mail")', reverse=True, limit=5):
+          print("[{}] {}".format(msg.from_, msg.subject))
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++구글에 imap tools 검색하면 더 다양한 조건들도 알 수 있음          
+import time
+print(time.strftime('%d-%a-%Y'))    # 현재 날짜를 일-요일-연도
+
+import datetime                     # 특정 날짜 정보
+dt = datetime.datetime.strptime("2020-12-30", "%Y-%m-%d")
+print(type(dt)) # <class 'datetime.datetime'>
+print(dt.strftime('%d-%b-%Y'))
