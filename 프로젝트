@@ -36,3 +36,29 @@
     파이썬 특강 신청합니다.
 
 # 테스트 메일 발신
+    import smtplib
+    from account import *
+    from random import *
+    from email.message import EmailMessage
+
+    nicknames = ["유재석", "박명수", "정형돈", "노홍철", "조세호"]
+
+    with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+
+        for nickname in nicknames:
+            msg = EmailMessage()
+            msg["subject"] = "파이썬 특강 신청합니다."
+            msg["From"] = EMAIL_ADDRESS
+            msg["To"] = "khyun9512@gmail.com"
+
+            # content = nickname + "/" + str(randint(1000,9999))    # 둘중 아무거나 써도 됨
+            content = "/".join([nickname, str(randint(1000,9999))]) # 둘중 아무거나 써도 됨
+            
+            msg.set_content(content)
+            smtp.send_message(msg)
+            print(nickname + "님이 김현 계정으로 메일을 발송 완료")
+
+# 메일 필터링
